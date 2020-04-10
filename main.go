@@ -31,6 +31,7 @@ func showIntro() {
 	version := 1.1
 	fmt.Printf("Hi %+v!\n", name)
 	fmt.Printf("Version: %+v\n", version)
+	fmt.Println("-----------------------------------------")
 }
 
 func showMenu() {
@@ -47,7 +48,14 @@ func readOption() int {
 
 func startMonitoring() {
 	fmt.Println("Monitoring...")
-	site := "https://www.globo.com"
+	sites := []string{"https://www.globo.com", "https://www.terra.com.br"}
+	for _, s := range sites {
+		testConnection(s)
+	}
+	fmt.Println("-----------------------------------------")
+}
+
+func testConnection(site string) {
 	r, err := http.Get(site)
 	if err != nil {
 		fmt.Println(err)
