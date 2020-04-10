@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
+
+const monitoring = 5
+const delay = 3
 
 func main() {
 	showIntro()
@@ -49,8 +53,12 @@ func readOption() int {
 func startMonitoring() {
 	fmt.Println("Monitoring...")
 	sites := []string{"https://www.globo.com", "https://www.terra.com.br"}
-	for _, s := range sites {
-		testConnection(s)
+	for i := 0; i < monitoring; i++ {
+		for _, site := range sites {
+			testConnection(site)
+		}
+		time.Sleep(delay * time.Second)
+		fmt.Println("-----------------------------------------")
 	}
 	fmt.Println("-----------------------------------------")
 }
