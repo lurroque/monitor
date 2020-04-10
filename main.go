@@ -1,22 +1,29 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+	"os"
+)
 
 func main() {
 	showIntro()
-	showMenu()
-	option := readOption()
-	switch option {
-	case 1:
-		startMonitoring()
-	case 2:
-		fmt.Println("Logs...")
-	case 0:
-		fmt.Println("Bye!")
-	default:
-		fmt.Println("Unknown option!")
+	for {
+		showMenu()
+		option := readOption()
+		switch option {
+		case 1:
+			startMonitoring()
+		case 2:
+			fmt.Println("Logs...")
+		case 0:
+			fmt.Println("Bye!")
+			os.Exit(0)
+		default:
+			fmt.Println("Unknown option!")
+			os.Exit(-1)
+		}
 	}
-
 }
 
 func showIntro() {
@@ -40,4 +47,16 @@ func readOption() int {
 
 func startMonitoring() {
 	fmt.Println("Monitoring...")
+	site := "https://www.globo.com"
+	r, err := http.Get(site)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if r.StatusCode == 200 {
+		fmt.Printf("Site ON: %+v\n", site)
+	}
+	if r.StatusCode != 200 {
+		fmt.Printf("Site connection with problems: %+v\n", site)
+		fmt.Printf("StatusCode: %+v\n", r.StatusCode)
+	}
 }
