@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -52,7 +55,7 @@ func readOption() int {
 
 func startMonitoring() {
 	fmt.Println("Monitoring...")
-	sites := []string{"https://www.globo.com", "https://www.terra.com.br"}
+	sites := readFile()
 	for i := 0; i < monitoring; i++ {
 		for _, site := range sites {
 			testConnection(site)
@@ -75,4 +78,23 @@ func testConnection(site string) {
 		fmt.Printf("Site connection with problems: %+v\n", site)
 		fmt.Printf("StatusCode: %+v\n", r.StatusCode)
 	}
+}
+
+func readFile() []string {
+	var sites []string
+	file, err := os.Open("sites.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+	reader := bufio.NewReader(file)
+	for {
+		line, err := reader.ReadString('\n')
+		line = strings.TrimSpace(line)
+		if err == io.EOF {
+			break
+		}
+		sites = append(sites, line)
+	}
+	file.Close()
+	return sites
 }
