@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -23,6 +25,7 @@ func main() {
 			startMonitoring()
 		case 2:
 			fmt.Println("Logs...")
+			showLogs()
 		case 0:
 			fmt.Println("Bye!")
 			os.Exit(0)
@@ -73,10 +76,12 @@ func testConnection(site string) {
 	}
 	if r.StatusCode == 200 {
 		fmt.Printf("Site ON: %+v\n", site)
+		writeLog(site, true)
 	}
 	if r.StatusCode != 200 {
 		fmt.Printf("Site connection with problems: %+v\n", site)
 		fmt.Printf("StatusCode: %+v\n", r.StatusCode)
+		writeLog(site, false)
 	}
 }
 
@@ -97,4 +102,23 @@ func readFile() []string {
 	}
 	file.Close()
 	return sites
+}
+
+func writeLog(site string, status bool) {
+	file, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Println(err)
+	}
+	file.WriteString(time.Now().Format(
+		"02/01/2006 15:04:05") + " - " + site + "- Online: " + strconv.FormatBool(status) + "\n")
+	file.Close()
+}
+
+func showLogs() {
+	// O ioutil já fecha o arquivo
+	file, err := ioutil.ReadFile("log.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(file))
 }
